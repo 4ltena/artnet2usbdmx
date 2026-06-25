@@ -1,0 +1,9 @@
+# 実環境固有の設定（実IP・実ホスト等を含む）。リポジトリには config.example.yaml のみ置く。
+config.yaml
+config.*.yaml
+!config.example.yaml
+
+# Python
+__pycache__/
+*.pyc
+.venv/

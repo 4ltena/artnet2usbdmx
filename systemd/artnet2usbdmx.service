@@ -1,0 +1,33 @@
+# artnet2usbdmx: ArtNet(UDP 6454) 受信 -> LTP マージ -> USB-DMX 出力。
+#
+# 配置: /etc/systemd/system/artnet2usbdmx.service
+# 有効化: sudo systemctl daemon-reload && sudo systemctl enable --now artnet2usbdmx
+# ログ:   journalctl -u artnet2usbdmx -f
+#
+# USB-DMX(FT232R USB UART)は ftdi_sio 経由で /dev/ttyUSB0 に現れる。
+# - シリアルアクセス: User を dialout グループに入れる（sudo usermod -aG dialout pi）。
+# - FTDI latency_timer を 1ms に下げるには /sys/.../latency_timer への書き込み権限が必要。
+#   権限が無い場合はドライバが warning を出すだけで停止はしない。常時下げたい場合は
+#   systemd/99-ftdi-dmx.rules を /etc/udev/rules.d/ に置く。
+
+[Unit]
+Description=ArtNet receiver + LTP merge + USB-DMX out (artnet2usbdmx)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+# FT232R(/dev/ttyUSB0) は group plugdev。dialout も付けて確実にアクセスできるようにする。
+SupplementaryGroups=dialout plugdev
+WorkingDirectory=/home/pi/artnet2usbdmx
+# config.yaml が無くても USB 未接続でも dry_run へ落ちて継続する。
+ExecStart=/usr/bin/python3 -m receiver --config /home/pi/artnet2usbdmx/config.yaml
+Restart=on-failure
+RestartSec=2
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

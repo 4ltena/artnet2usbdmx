@@ -1,0 +1,30 @@
+# artnet2usbdmx 設定例
+#
+# Art-Net(UDP 6454) を受信し、LTP マージして USB-DMX へ連続送出する受信側の設定。
+# すべての項目に既定値があるため、必要な箇所だけ書けばよい。
+# CLI からは --set receiver.dmx.dry_run=true のように個別上書きできる。
+
+artnet:
+  universe: 0           # 系統A の Port-Address（15bit）。送信ソフトの universe と一致させる
+  stream_offset: 1      # 系統B = universe + offset（2系統を LTP マージする場合のみ意味を持つ）
+  port: 6454            # Art-Net 標準 UDP ポート
+
+receiver:
+  stale_timeout_ms: 800 # この時間更新が無い系統はマージ対象外（1ソースでは B が常に stale=正常）
+  refresh_hz: 40        # DMX 連続送出レート（受信が途切れても直近値を送り続ける）
+  bind_ip: ""           # 受信バインド IP（""=全て）。複数 NIC で限定したいときだけ設定
+  dmx:
+    # USB を自動検出して照明(DMX)デバイスを見つけたら送信する（port: auto）。
+    # 既知の DMX 用 USB(FTDI FT232R 0403:6001 等)を走査し、接続/切断にも追従する。
+    # デバイスが無ければ送信しない。FT232R はホスト側で BREAK/MAB と全スロットを生成。
+    driver: open_dmx    # open_dmx(FT232R 等) | enttec_pro | auto(説明から推定)
+    port: auto          # auto=USB自動検出 / 固定する場合は /dev/ttyUSB0 等
+    dry_run: false      # true で USB へ一切書き込まない（テスト時の安全装置・最優先）
+    auto_rescan_s: 2.0  # 自動検出モードの再走査間隔(秒)
+  status:
+    mode: console       # console | web | none
+    web_port: 8080
+    interval_s: 0.5     # 状態表示の更新間隔
+
+logging:
+  level: INFO           # DEBUG | INFO | WARNING | ERROR

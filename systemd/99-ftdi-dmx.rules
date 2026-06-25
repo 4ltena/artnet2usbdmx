@@ -1,0 +1,8 @@
+# FT232R / FTDI USB-UART を DMX 出力に使う際の udev ルール。
+# 配置: /etc/udev/rules.d/99-ftdi-dmx.rules
+# 反映: sudo udevadm control --reload && sudo udevadm trigger
+#
+# FTDI の latency_timer 既定は 16ms で、小さい書き込みがまとめて送られるため
+# DMX のフレーム間隔が大きくジッタする。1ms に下げると Open DMX(FTDI直結)方式での
+# 連続送出が安定する。サービス(pi ユーザ)からは sysfs に書けないため udev で恒久設定する。
+ACTION=="add|change", SUBSYSTEM=="usb-serial", DRIVER=="ftdi_sio", ATTR{latency_timer}="1"

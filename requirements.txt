@@ -1,0 +1,14 @@
+# artnet2usbdmx 依存パッケージ
+#
+# 共通ロジック（common/）は追加依存なしで動く（標準ライブラリのみ）。
+# DMX 出力（実ハードウェア送出）と設定 YAML 読み込みにのみ依存する。
+
+# 設定ファイル（YAML）。TOML を使う場合は Python 3.11+ の tomllib（標準）で読める。
+PyYAML>=6.0
+
+# Enttec DMX USB Pro 系 / Open DMX(FTDI) のシリアル出力に必要。
+# 未インストールでも import は通り、dry-run にフォールバックする（遅延 import）。
+pyserial>=3.5
+
+# Open DMX のより正確な BREAK/MAB タイミングが必要な場合のみ（任意）。
+# pyftdi>=0.55
