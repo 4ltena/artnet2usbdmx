@@ -1,5 +1,7 @@
 # artnet2usbdmx — Art-Net → USB-DMX 変換
 
+**日本語** | [English](README.en.md)
+
 Raspberry Pi（や任意の Linux/PC）で **Art-Net(UDP 6454) を受信し、USB-DMX インターフェイス
 （FT232R 等の汎用 FTDI / Enttec DMX USB Pro）から DMX512 を連続送出する**最小構成のツール。
 
@@ -33,7 +35,9 @@ artnet2usbdmx/
   config.example.yaml
   requirements.txt
   LICENSE
-  README.md
+  CHANGELOG.md
+  README.md       # 日本語（主）
+  README.en.md    # English
 ```
 
 ## 必要環境
