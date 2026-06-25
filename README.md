@@ -6,17 +6,13 @@ Raspberry Pi（や任意の Linux/PC）で **Art-Net(UDP 6454) を受信し、US
 照明卓・ビジュアライザ（MagicQ, QLC+ 等）からの Art-Net をそのまま実照明へ橋渡しする。
 追加依存はほぼ無く（標準ライブラリ中心）、USB-DMX が未接続でも安全に dry-run で起動する。
 
-```
-   送信ソース(PC: MagicQ / QLC+ 等)
-        │  Art-Net (UDP 6454, universe U)
-        ▼
- ┌────────────────────────────┐  UDP 6454 を受信
- │ artnet2usbdmx (Raspberry Pi)│  ch 単位 LTP マージ（任意で 2 universe）
- │                            │  マージ後 512ch を ~40Hz で連続送出
- └────────────────────────────┘
-        │  USB-DMX (FT232R USB UART = 汎用FTDI / open_dmx)
-        ▼
-      照明一式
+```mermaid
+flowchart TD
+    PC["送信ソース（PC: MagicQ / QLC+ 等）"]
+    A2U["artnet2usbdmx（Raspberry Pi）<br/>UDP 6454 を受信<br/>ch 単位 LTP マージ（任意で 2 universe）<br/>マージ後 512ch を ~40Hz で連続送出"]
+    LIGHTS["照明一式"]
+    PC -->|"Art-Net（UDP 6454, universe U）"| A2U
+    A2U -->|"USB-DMX（FT232R USB UART = 汎用FTDI / open_dmx）"| LIGHTS
 ```
 
 ## 特徴
@@ -144,7 +140,7 @@ receiver が A(U)/B(U+1) を ch 単位で LTP マージする。片系統が `st
 
 > 同じ universe を 2 台が同時送出すると両方とも「系統A」扱いになり奪い合う（A/B は universe で区別し、送信元IPでは区別しない）。
 
-## ⚠️ 安全
+## 安全
 
 実照明が接続された状態で `dry_run:false` 稼働中は、**届いた universe の値がそのまま実照明に出る**。
 疎通だけ確認したいときは、照明を物理的に外すか、一時的に `--set receiver.dmx.dry_run=true` で
